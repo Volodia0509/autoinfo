@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Інформація про автомобілі</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Марки автомобілів</h1>
+
+    {% for car in cars %}
+      <div class="car-card">
+        <h2>{{ car.brand }}</h2>
+        <p><strong>Країна:</strong> {{ car.country }}</p>
+        <p><strong>Рік заснування:</strong> {{ car.year }}</p>
+        <p>{{ car.description }}</p>
+        <img src="{{ url_for('static', filename='cars/' + car.image) }}" alt="{{ car.brand }}" class="car-image">
+      </div>
+    {% endfor %}
+
+    <a href="/" class="back-link">← На головну</a>
+  </div>
+</body>
+</html>

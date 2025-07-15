@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Увійти</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Вхід до системи</h1>
+    <form method="POST" action="/login">
+      <input type="text" name="username" placeholder="Ім’я користувача" required>
+      <input type="password" name="password" placeholder="Пароль" required>
+      <button type="submit">Увійти</button>
+    </form>
+    <p>Ще не маєш акаунту? <a href="/register">Зареєструйся</a></p>
+  </div>
+</body>
+</html>
