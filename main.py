@@ -1,44 +1,46 @@
-from flask import Flask, render_template, request, redirect, session, url_for
-import requests
-import bcrypt
+from flask import Flask, render_template, request, redirect, url_for, session
+import google.generativeai as genai
+import json
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+genai.configure(api_key="AIzaSyDxYnqI7rauFjB8PAa0z6yryAr3iXnblNM")
+model = genai.GenerativeModel(model_name="gemini-2.5-flash")
 
-# URL API
-PHP_API_URL = "https://justconsole.tech/python/api.php?table=users_new"
+USERS_FILE = 'users.json'
+
+def load_users():
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f:
+        json.dump(users, f)
 
 @app.route('/')
 def home():
-    user = session.get('user')
-    return render_template("index.html", user=user)
+    return render_template('index.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
-        email = request.form['email']
         password = request.form['password']
 
-        # Хешування пароля
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        users = load_users()
+        if username in users:
+            return "Користувач з таким ім'ям вже існує!"
 
-        data = {
-            "username": username,
-            "email": email,
-            "password": hashed_password
-        }
+        users[username] = password
+        save_users(users)
+        return redirect(url_for('login'))
 
-        try:
-            response = requests.post(PHP_API_URL, json=data)
-            if response.status_code == 200:
-                return redirect('/login')
-            else:
-                return f"<p>Помилка при реєстрації: {response.text}</p>"
-        except requests.exceptions.RequestException as e:
-            return f"<p>Халепа з API: {str(e)}</p>"
+    return render_template('register.html')
 
-    return render_template("register.html")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -46,28 +48,35 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        try:
-            response = requests.get(PHP_API_URL)
-            users = response.json()
-            user = next((u for u in users if u['username'] == username), None)
+        users = load_users()
+        if username in users and users[username] == password:
+            session['username'] = username
+            return redirect(url_for('cars'))
+        else:
+            return 'Неправильний логін або пароль'
 
-            if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
-                print(True)
-                session['user'] = user['username']
-                return redirect('/')
-            else:
-                print(False)
-                return "<p>Невірний логін або пароль!</p>"
-
-        except requests.exceptions.RequestException as e:
-            return f"<p>Халепа з API: {str(e)}</p>"
-
-    return render_template("login.html")
+    return render_template('login.html')
 
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
-    return redirect('/')
+    session.pop('username', None)
+    return redirect(url_for('home'))
+
+@app.route("/ai", methods=["GET", "POST"])
+def ai_chat():
+    response_text = ""
+    if request.method == "POST":
+        user_question = request.form.get("question")
+        try:
+            response = model.generate_content(user_question)
+            response_text = response.text
+        except Exception as e:
+            response_text = f"Помилка: {e}"
+    return render_template("ai.html", response=response_text)
+
+@app.route('/game')
+def game():
+    return render_template('game.html')
 
 @app.route('/cars')
 def cars():
@@ -77,7 +86,7 @@ def cars():
             "country": "Німеччина",
             "year": 1916,
             "description": "BMW відома своїми динамічними автомобілями та участю в автоспорті. Серія M є синонімом потужності та стилю. Компанія активно інвестує в електромобілі та нові технології.",
-            "image": "bmw.jpg"
+            "image": "BMW.jpg"
         },
         {
             "brand": "Toyota",
@@ -98,7 +107,7 @@ def cars():
             "country": "Німеччина",
             "year": 1926,
             "description": "Mercedes-Benz є символом розкоші, комфорту та технічної досконалості. Її слоган — «Найкраще або нічого». Компанія активно розвиває електролінійку EQ.",
-            "image": "mercedes.jpg"
+            "image": "mersedes.jpg"
         },
         {
             "brand": "Audi",
@@ -213,8 +222,8 @@ def cars():
             "image": "renault.jpg"
         }
     ]
-
     return render_template("cars.html", cars=car_data)
 
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)
+    app.run(debug=True)

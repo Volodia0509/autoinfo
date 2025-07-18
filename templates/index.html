@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ласкаво просимо</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Головна</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
-  <div class="container">
-    <h1>Ласкаво просимо на наш сайт!</h1>
-    <p>Цей сайт об'єднує інформацію про автомобілі та інтеграцію з AI для відповідей на ваші запитання.</p>
-
-    <div class="buttons">
-      <a href="/register" class="btn">Зареєструватися</a>
-      <a href="/login" class="btn">Увійти</a>
-    </div>
-  </div>
-
+  <h1>Вітаємо на сайті</h1>
+  <nav>|
+    <a href="/login" class="no-underline">Вхід</a> |
+    <a href="/register" class="no-underline">Реєстрація</a> |
+    <a href="/ai" class="no-underline">Питання</a> |
+    <a href="/game" class="no-underline">Гра</a> |
+  </nav>
+  <p>Це головна сторінка сайту.</p>
+  <p>Цей сайт створено для фанатів машин, тут у нас можна пограти у гру"Вгадай машину по фото", чи щось спитати у Штучного інтелекту.</p>
+  <p>Для перегляду машин Вам потрібно зареєструватись або увійти в акаунт. Дякую за Ваш візит на сайт.</p>
 </body>
 </html>

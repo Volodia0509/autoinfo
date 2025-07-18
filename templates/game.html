@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Вгадай машину</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+            background-color: #111;
+            color: white;
+        }
+        img {
+            width: 300px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+        .options {
+            margin-top: 20px;
+        }
+        button {
+            background-color: #222;
+            color: white;
+            border: 1px solid white;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #444;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Вгадай машину</h1>
+<p>Вибери правильну назву машини:</p>
+<img id="carImage" src="" alt="Машина">
+<div class="options" id="options"></div>
+<div id="result"></div>
+<button onclick="loadNextCar()">Наступна</button>
+
+<script>
+    const cars = [
+        {
+            name: "Audi",
+            image: "/static/images/audi.jpg"
+        },
+        {
+            name: "BMW",
+            image: "/static/images/BMW.jpg"
+        },
+        {
+            name: "Mercedes",
+            image: "/static/images/mersedes.jpg"
+        },
+        {
+            name: "Toyota",
+            image: "/static/images/toyota.jpg"
+        },
+        {
+            name: "Ford",
+            image: "/static/images/ford.jpg"
+        },
+                {
+            name: "Kia",
+            image: "/static/images/kia.jpg"
+        },
+                {
+            name: "Honda",
+            image: "/static/images/honda.jpg"
+        },
+                {
+            name: "Tesla",
+            image: "/static/images/tesla.jpg"
+        },
+                {
+            name: "Subaru",
+            image: "/static/images/subaru.jpg"
+        },
+                {
+            name: "Ferrari",
+            image: "/static/images/ferrari.jpg"
+        },
+                {
+            name: "Nissan",
+            image: "/static/images/nissan.jpg"
+        },
+    ];
+
+    let currentCar = null;
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function loadNextCar() {
+        const shuffled = shuffle([...cars]);
+        currentCar = shuffled[0];
+
+        document.getElementById("carImage").src = currentCar.image;
+        document.getElementById("result").innerText = "";
+
+        const options = shuffle([
+            currentCar.name,
+            shuffled[1].name,
+            shuffled[2].name,
+            shuffled[3].name
+        ]);
+
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+
+        for (const opt of options) {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.onclick = () => checkAnswer(opt);
+            optionsDiv.appendChild(btn);
+        }
+    }
+
+    function checkAnswer(selected) {
+        if (selected === currentCar.name) {
+            document.getElementById("result").innerText = "✅ Правильно!";
+        } else {
+            document.getElementById("result").innerText = "❌ Неправильно! Це була: " + currentCar.name;
+        }
+    }
+
+    // Старт
+    loadNextCar();
+</script>
+
+</body>
+</html>

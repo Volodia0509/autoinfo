@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Запитай у ШІ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Запитай у ШІ</h1>
+        <form method="POST">
+            <textarea name="question" placeholder="Введи своє запитання..." required></textarea>
+            <br>
+            <button type="submit">Відправити</button>
+        </form>
+
+        {% if response %}
+        <div class="response-block">
+            <h3>Відповідь:</h3>
+            <p>{{ response }}</p>
+        </div>
+        {% endif %}
+        <br>
+        <a href="/">Повернутись на головну</a>
+    </div>
+</body>
+</html>
