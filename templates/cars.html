@@ -4,25 +4,151 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Автомобілі</title>
+
+  <style>
+
+    #menu-toggle {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      width: 30px;
+      height: 25px;
+      cursor: pointer;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    #menu-toggle span {
+      display: block;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+    }
+
+    #side-menu {
+      position: fixed;
+      top: 0;
+      left: -250px; /* сховано за межами екрану */
+      width: 250px;
+      height: 100%;
+      background-color: #f0f0f0;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+      padding: 50px 20px 20px 20px;
+      transition: left 0.3s ease;
+      z-index: 1000;
+      font-family: sans-serif;
+    }
+
+    #side-menu.open {
+      left: 0; /* меню видно */
+    }
+
+    #side-menu a {
+      display: block;
+      padding: 10px 0;
+      color: #333;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    #side-menu a:hover {
+      background-color: #ddd;
+    }
+
+    body {
+      padding-left: 60px;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+</body>
+
+  <div id="menu-toggle" aria-label="Відкрити меню" role="button" tabindex="0">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <nav id="side-menu" aria-hidden="true">
+    <a href="/">Головна</a>
+    <a href="/game">Гра</a>
+    <a href="/pdr">ПДР-Гра</a>
+    <a href="/ai">Питання до ШІ</a>
+  </nav>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
 
-<h1>Інформація про автомобілі</h1>
+<h1>Каталог машин</h1>
 
-<div class="cars-container">
+<div class="filter-container">
+  <label for="sort">Сортувати за:</label>
+  <select id="sort" onchange="filterAndSortCars()">
+    <option value="all">Всі</option>
+    <option value="price-desc">Ціна: від високої до низької</option>
+    <option value="price-asc">Ціна: від низької до високої</option>
+    <option value="year-asc">Рік: від найстарішого</option>
+    <option value="year-desc">Рік: від найновішого</option>
+  </select>
+
+  <label for="country-filter">Фільтр за країною:</label>
+  <select id="country-filter" onchange="filterAndSortCars()">
+    <option value="all">Всі країни</option>
+    <option value="Німеччина">Німеччина</option>
+    <option value="Японія">Японія</option>
+    <option value="США">США</option>
+    <option value="Італія">Італія</option>
+    <option value="Південна Корея">Південна Корея</option>
+    <option value="Велика Британія">Велика Британія</option>
+    <option value="Франція">Франція</option>
+    <option value="Швеція">Швеція</option>
+    <option value="Індія">Індія</option>
+    <option value="Китай">Китай</option>
+    <option value="Іспанія">Іспанія</option>
+    <option value="Чехія">Чехія</option>
+    <option value="Хорватія">Хорватія</option>
+  </select>
+</div>
+
+<div class="cars-container" id="cars-container">
   {% for car in cars %}
-  <div class="car-card">
+  <div class="car-card" data-price="{{ car.price }}" data-year="{{ car.year }}" data-country="{{ car.country }}">
     <h2>{{ car.brand }}</h2>
     <img src="{{ url_for('static', filename='images/' + car.image) }}" alt="{{ car.brand }}">
     <p><strong>Країна:</strong> {{ car.country }}</p>
     <p><strong>Рік випуску:</strong> {{ car.year }}</p>
+    <p><strong>Ціна:</strong> {{ car.price }}</p>
     <p>{{ car.description }}</p>
   </div>
 {% endfor %}
 </div>
 
 <script>
+  const menuToggle = document.getElementById('menu-toggle');
+    const sideMenu = document.getElementById('side-menu');
+
+    function toggleMenu() {
+      const isOpen = sideMenu.classList.contains('open');
+      sideMenu.classList.toggle('open');
+      sideMenu.setAttribute('aria-hidden', isOpen ? 'true' : 'false');
+    }
+
+    menuToggle.addEventListener('click', toggleMenu);
+    // Для доступності: відкрити/закрити меню по Enter або Space
+    menuToggle.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleMenu();
+      }
+    });
+  document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('cars-container');
+  const allCards = Array.from(container.getElementsByClassName('car-card'));
+
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -31,9 +157,47 @@
       }
     });
   });
-  document.querySelectorAll('.car-card').forEach(card => {
-    observer.observe(card);
-  });
+
+  function observeCards(cards) {
+    cards.forEach(card => observer.observe(card));
+  }
+
+  function filterAndSortCars() {
+    const sortType = document.getElementById('sort').value;
+    const countryFilter = document.getElementById('country-filter').value;
+
+    let filteredCards = allCards.filter(card => {
+      if (countryFilter === 'all') return true;
+      return card.dataset.country === countryFilter;
+    });
+
+    // Сортуємо
+    let sortedCards;
+    if (sortType === 'price-desc') {
+      sortedCards = filteredCards.sort((a, b) => b.dataset.price - a.dataset.price);
+    } else if (sortType === 'price-asc') {
+      sortedCards = filteredCards.sort((a, b) => a.dataset.price - b.dataset.price);
+    } else if (sortType === 'year-asc') {
+      sortedCards = filteredCards.sort((a, b) => a.dataset.year - b.dataset.year);
+    } else if (sortType === 'year-desc') {
+      sortedCards = filteredCards.sort((a, b) => b.dataset.year - a.dataset.year);
+    } else {
+      sortedCards = filteredCards;
+    }
+
+    container.innerHTML = '';
+    sortedCards.forEach(card => container.appendChild(card));
+
+    observeCards(sortedCards);
+  }
+
+  observeCards(allCards);
+
+  filterAndSortCars();
+
+  document.getElementById('sort').addEventListener('change', filterAndSortCars);
+  document.getElementById('country-filter').addEventListener('change', filterAndSortCars);
+});
 </script>
 
 </body>

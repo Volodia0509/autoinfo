@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Гра: Вгадай ПДР-знак</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>Гра: Вгадай ПДР-знак</h1>
+<img id="sign-img" src="" alt="ПДР-знак" />
+<div class="options" id="options-container"></div>
+<button id="next-btn">Наступне</button>
+
+<script>
+  const signs = [
+    {src: 'static/signs/stop.png', answer: 'Стоп', options: ['Стоп', 'Проїзд заборонено', 'Пішохідний перехід', 'Обмеження швидкості']},
+    {src: 'static/signs/no_entry.png', answer: 'Проїзд заборонено', options: ['Стоп', 'Проїзд заборонено', 'Пішохідний перехід', 'Обмеження швидкості']},
+    {src: 'static/signs/pedestrian_crossing.png', answer: 'Пішохідний перехід', options: ['Стоп', 'Пішохідний перехід', 'Дорога з пріоритетом', 'Обмеження швидкості']},
+    {src: 'static/signs/speed_limit_50.png', answer: 'Обмеження швидкості', options: ['Обмеження швидкості', 'Стоп', 'Проїзд заборонено', 'Пішохідний перехід']},
+  ];
+
+  let currentIndex = 0;
+
+  const imgEl = document.getElementById('sign-img');
+  const optionsContainer = document.getElementById('options-container');
+  const nextBtn = document.getElementById('next-btn');
+
+  function loadSign(index) {
+    const sign = signs[index];
+    imgEl.src = sign.src;
+    imgEl.alt = `ПДР-знак: ${sign.answer}`;
+    optionsContainer.innerHTML = '';
+    nextBtn.style.display = 'none';
+
+    sign.options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.textContent = option;
+      btn.onclick = () => selectOption(btn, option === sign.answer);
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  function selectOption(button, isCorrect) {
+    Array.from(optionsContainer.children).forEach(btn => btn.disabled = true);
+
+    if (isCorrect) {
+      button.classList.add('correct');
+    } else {
+      button.classList.add('wrong');
+      Array.from(optionsContainer.children).forEach(btn => {
+        if (btn.textContent === signs[currentIndex].answer) {
+          btn.classList.add('correct');
+        }
+      });
+    }
+
+    nextBtn.style.display = 'inline-block';
+  }
+
+  nextBtn.onclick = () => {
+    currentIndex++;
+    if (currentIndex >= signs.length) {
+      currentIndex = 0;
+    }
+    loadSign(currentIndex);
+  }
+
+  loadSign(currentIndex);
+</script>
+
+</body>
+</html>
