@@ -121,7 +121,7 @@
     <img src="{{ url_for('static', filename='images/' + car.image) }}" alt="{{ car.brand }}">
     <p><strong>Країна:</strong> {{ car.country }}</p>
     <p><strong>Рік випуску:</strong> {{ car.year }}</p>
-    <p><strong>Ціна:</strong> {{ car.price }}</p>
+    <p><strong>Ціна в $:</strong> {{ car.price }}</p>
     <p>{{ car.description }}</p>
   </div>
 {% endfor %}

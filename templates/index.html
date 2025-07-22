@@ -6,18 +6,42 @@
   <title>Головна</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-  <h1>Вітаємо на сайті</h1>
-  <nav>|
-    <a href="/login" class="no-underline">Вхід</a> |
-    <a href="/register" class="no-underline">Реєстрація</a> |
-    <a href="/ai" class="no-underline">Питання</a> |
-    <a href="/game" class="no-underline">Гра</a> |
-    <a href="/pdr" class="no-underline">ПДР-гра</a> |
-  </nav>
-  <p>Це головна сторінка сайту.</p>
-  <p>Цей сайт створено для фанатів машин, тут у нас можна пограти у гру"Вгадай машину по фото", чи щось спитати у Штучного інтелекту.</p>
-  <p>Також тут є міні-гра по ПДР, можна перевірити знання про знаки дорожнього руху.</p>
-  <p>Для перегляду машин Вам потрібно зареєструватись або увійти в акаунт. Дякую за Ваш візит на сайт.</p>
+<body class="main-page">
+
+  <header class="main-header">
+    <h1>Вітаємо на сайті автолюбителів!</h1>
+    <nav class="main-nav">
+      <a href="/login">Вхід</a>
+      <a href="/register">Реєстрація</a>
+      <a href="/ai">Питання до ШІ</a>
+      <a href="/game">Гра</a>
+      <a href="/pdr">ПДР-гра</a>
+    </nav>
+  </header>
+
+  <section class="intro">
+    <p>Ласкаво просимо до сайту для фанатів автомобілів!</p>
+    <p>Вгадай марку машини по фото,</p>
+    <p>Став питання штучному інтелекту,</p>
+    <p>Перевір знання знаків у міні-грі по ПДР.</p>
+    <p>Щоб переглянути каталог авто — увійди або зареєструйся.</p>
+  </section>
+
+<div class="fence-left">
+    <img src="/static/images/audi.jpg" alt="Audi">
+    <img src="/static/images/pagani.jpg" alt="Pagani">
+    <img src="/static/images/alfa_romeo.jpg" alt="Alfa Romeo">
+</div>
+
+<div class="fence-right">
+    <img src="/static/images/BMW.jpg" alt="BMW">
+    <img src="/static/images/mersedes.jpg" alt="Mercedes">
+    <img src="/static/images/porsche.jpg" alt="Porsche">
+</div>
+
+  <footer class="main-footer">
+    <p>Дякуємо за візит! Гарного вам дня на нашому сайті.</p>
+  </footer>
+
 </body>
 </html>
